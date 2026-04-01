@@ -73,7 +73,18 @@
         .section-header { background: linear-gradient(135deg, #fff5f5, white); padding: 1.25rem 2rem; border-bottom: 2px solid #f3e5e5; display: flex; align-items: center; gap: 1rem; }
         .section-icon { width: 52px; height: 52px; background: var(--cri-red); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
         .section-title h2 { font-size: 1.4rem; margin: 0; }
-        .section-title p { color: var(--gray-600); margin-top: 0.3rem; font-size: 0.95rem; }
+                .section-title h2,
+        .section-title p,
+        .hint,
+        .output-title {
+            color: #111827 !important;
+        }
+
+        .section-title p { 
+            color: var(--gray-600); 
+            margin-top: 0.3rem; 
+            font-size: 0.95rem; 
+        }
         .section-body { padding: 2rem; }
 
         input[type="text"] { width: 100%; padding: 1rem; border: 2px solid #d1d5db; border-radius: 10px; font-size: 1rem; transition: all 0.2s; }
@@ -113,14 +124,17 @@
 
     <div class="header-right">
         <div class="creator-text">
-          <a href="https://discord.com/users/872144738248183839" target="_blank" style="color: #ffffff; font-weight: 600; text-decoration: underline;">
-           @Damy_97
-            <span class="tag">#T.Stark</span>
+            <a href="https://discord.com/users/872144738248183839" 
+               target="_blank" 
+               style="color: #ffffff; font-weight: 600; text-decoration: underline;">
+                @Damy_97 <span class="tag">#T.Stark</span>
+            </a>
         </div>
         <div class="logo-circle">
             <img src="https://i.imgur.com/7rWaY0R.png" alt="Stark Logo">
         </div>
     </div>
+
 </header>
 
 <div class="container">
@@ -311,4 +325,4 @@ elements.copyWelcome.addEventListener('click', () => copyToClipboard(elements.we
 updatePreviews();
 </script>
 </body>
-</html>
+</html> 
