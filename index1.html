@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Richieste Ruoli - Croce Rossa Italiana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cri-red: #CC0000;
+            --cri-red-dark: #A30000;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --green-500: #22c55e;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #fff0f0 0%, #ffe6e6 100%);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--cri-red) 0%, var(--cri-red-dark) 100%);
+            color: white;
+            padding: 0.9rem 1.8rem;
+            box-shadow: 0 4px 16px rgba(204,0,0,0.35);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content { display: flex; align-items: center; gap: 1rem; }
+
+        .logo-ps {
+            width: 50px; height: 50px; border-radius: 50%; overflow: hidden;
+            background: white; border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center;
+        }
+        .logo-ps img { width: 85%; height: 85%; object-fit: contain; }
+
+        .header-title h1 { font-size: 1.4rem; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+        .header-title .subtitle { font-size: 0.78rem; opacity: 0.88; }
+
+        .header-right { display: flex; align-items: center; gap: 0.8rem; }
+        .creator-text { text-align: right; font-size: 0.82rem; line-height: 1.25; }
+        .creator-text .handle { font-weight: 600; }
+
+        .logo-circle {
+            width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+            background: white; border: 2px solid rgba(255,255,255,0.35);
+            box-shadow: var(--shadow-sm);
+        }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+        .section { background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 2rem; overflow: hidden; }
+        .section-header { background: linear-gradient(135deg, #fff5f5, white); padding: 1.25rem 2rem; border-bottom: 2px solid #f3e5e5; display: flex; align-items: center; gap: 1rem; }
+        .section-icon { width: 52px; height: 52px; background: var(--cri-red); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+        .section-title h2 { font-size: 1.4rem; margin: 0; }
+        .section-title p { color: var(--gray-600); margin-top: 0.3rem; font-size: 0.95rem; }
+        .section-body { padding: 2rem; }
+
+        input[type="text"] { width: 100%; padding: 1rem; border: 2px solid #d1d5db; border-radius: 10px; font-size: 1rem; transition: all 0.2s; }
+        input[type="text"]:focus { outline: none; border-color: var(--cri-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.15); }
+
+        .hint { margin-top: 0.6rem; color: var(--gray-500); font-size: 0.85rem; }
+        .outputs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .output-card { background: #fff5f5; border: 1px solid #f3e5e5; border-radius: 12px; padding: 1.4rem; transition: all 0.2s; }
+        .output-card:hover { border-color: var(--cri-red); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(204,0,0,0.12); }
+        .output-title { font-weight: 700; color: var(--cri-red-dark); margin-bottom: 1rem; font-size: 1.1rem; }
+        .preview { background: white; border: 1px solid #f3e5e5; border-radius: 8px; padding: 1.1rem; font-family: monospace; font-size: 0.92rem; white-space: pre-wrap; min-height: 260px; line-height: 1.55; }
+        
+        button { margin-top: 1rem; width: 100%; padding: 0.9rem; background: var(--cri-red); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        button:hover:not(:disabled) { background: var(--cri-red-dark); transform: translateY(-1px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; max-width: 400px; }
+        .toast { background: white; border-radius: 12px; padding: 1rem 1.3rem; margin-bottom: 0.8rem; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-left: 5px solid; }
+        .toast.success { border-left-color: var(--green-500); }
+        .toast.error { border-left-color: #ef4444; }
+    </style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<header class="app-header">
+    <div class="header-content">
+        <div class="logo-ps">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Croce_Rossa_Italiana_-_logo_%28Italy%2C_1994%29.svg" alt="Logo Croce Rossa Italiana">
+        </div>
+        <div class="header-title">
+            <h1>SISTEMA RICHIESTE RUOLI</h1>
+            <div class="subtitle">Croce Rossa Italiana</div>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <div class="creator-text">
+            By <span class="handle">@T.Stark</span><br>
+            <span class="tag">#T.Stark</span>
+        </div>
+        <div class="logo-circle">
+            <img src="https://i.imgur.com/7rWaY0R.png" alt="Stark Logo">
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- ID Discord -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">ID</div>
+            <div class="section-title">
+                <h2>Inserisci ID Discord</h2>
+                <p>Incolla l'ID numerico dell'utente (18 cifre)</p>
+            </div>
+        </div>
+        <div class="section-body">
+            <input type="text" id="discordId" placeholder="Es: 123456789012345678" maxlength="18" />
+            <div class="hint">ℹ Deve essere un ID numerico di 18 cifre</div>
+        </div>
+    </div>
+
+    <!-- Nome e Cognome -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">👤</div>
+            <div class="section-title">
+                <h2>Inserisci Nome e Cognome</h2>
+                <p>Solo per il messaggio di benvenuto</p>
+            </div>
+        </div>
+        <div class="section-body">
+            <input type="text" id="nomeCognome" placeholder="Es: Mario Rossi" />
+            <div class="hint">Verrà inserito automaticamente nel messaggio di benvenuto</div>
+        </div>
+    </div>
+
+    <!-- Messaggi Generati -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-icon">📋</div>
+            <div class="section-title">
+                <h2>Messaggi Generati</h2>
+                <p>Copia e incolla nei canali appropriati</p>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="outputs-grid">
+
+                <div class="output-card">
+                    <div class="output-title">Richiesta Ruoli Principale</div>
+                    <div class="preview" id="mainRolesPreview">Inserisci un ID Discord valido</div>
+                    <button id="copyMainBtn" disabled>Copia Messaggio</button>
+                </div>
+
+                <div class="output-card">
+                    <div class="output-title">Richiesta Ruoli Fazioni</div>
+                    <div class="preview" id="factionRolesPreview">Inserisci un ID Discord valido</div>
+                    <button id="copyFactionBtn" disabled>Copia Messaggio</button>
+                </div>
+
+                <div class="output-card">
+                    <div class="output-title">Richiesta rimozione ruoli Principale</div>
+                    <div class="preview" id="removeMainPreview">Inserisci un ID Discord valido</div>
+                    <button id="copyRemoveMainBtn" disabled>Copia Messaggio</button>
+                </div>
+
+                <div class="output-card">
+                    <div class="output-title">Richiesta rimozione ruoli Fazioni</div>
+                    <div class="preview" id="removeFactionPreview">Inserisci un ID Discord valido</div>
+                    <button id="copyRemoveFactionBtn" disabled>Copia Messaggio</button>
+                </div>
+
+                <div class="output-card">
+                    <div class="output-title">Messaggio di Benvenuto</div>
+                    <div class="preview" id="welcomePreview">Inserisci ID Discord e Nome Cognome</div>
+                    <button id="copyWelcomeBtn" disabled>Copia Messaggio</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const elements = {
+    discordId: document.getElementById('discordId'),
+    nomeCognome: document.getElementById('nomeCognome'),
+    mainPreview: document.getElementById('mainRolesPreview'),
+    factionPreview: document.getElementById('factionRolesPreview'),
+    removeMainPreview: document.getElementById('removeMainPreview'),
+    removeFactionPreview: document.getElementById('removeFactionPreview'),
+    welcomePreview: document.getElementById('welcomePreview'),
+    copyMain: document.getElementById('copyMainBtn'),
+    copyFaction: document.getElementById('copyFactionBtn'),
+    copyRemoveMain: document.getElementById('copyRemoveMainBtn'),
+    copyRemoveFaction: document.getElementById('copyRemoveFactionBtn'),
+    copyWelcome: document.getElementById('copyWelcomeBtn')
+};
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.getElementById('toastContainer').appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
+function updatePreviews() {
+    const id = elements.discordId.value.trim();
+    const nome = elements.nomeCognome.value.trim();
+    const valid = id.length === 18 && /^\d+$/.test(id);
+    const mention = valid ? `<@${id}>` : '<@ID>';
+
+    const nomeDisplay = nome || "Nome Cognome";
+
+    // Richiesta Ruoli Principale
+    elements.mainPreview.textContent = valid 
+        ? `Richiedo ruoli <@&793853904844095498> e <@&1099804935853449226> a ${mention} grazie!`
+        : "Inserisci un ID Discord valido per generare il messaggio";
+
+    // Richiesta Ruoli Fazioni
+    elements.factionPreview.textContent = valid 
+        ? `Richiedo ruoli <@&963862177918365696> e <@&1059959463865499729> a ${mention} grazie!`
+        : "Inserisci un ID Discord valido per generare il messaggio";
+
+    // Rimozione Principale
+    elements.removeMainPreview.textContent = valid 
+        ? `Richiedo rimozione ruoli <@&793853904844095498> a ${mention}`
+        : "Inserisci un ID Discord valido per generare il messaggio";
+
+    // Rimozione Fazioni
+    elements.removeFactionPreview.textContent = valid 
+        ? `Richiedo rimozione di tutti i ruoli <@&963862177918365696> a ${mention}`
+        : "Inserisci un ID Discord valido per generare il messaggio";
+
+    // Messaggio di Benvenuto
+    elements.welcomePreview.textContent = valid 
+        ? `🎉 **Benvenuto/a al nuovo Operatore! <@&963862177918365696>**
+- **Utente:** ${mention}
+📌 **Cose importanti da sapere:**
+1. Leggi attentamente i canali <#1080168292020408380>.
+2. Cambia il tuo **Nominativo** in applicativo seguendo il formato:
+   \`\`\`
+   [Aut.Socc.] ${nomeDisplay}
+   \`\`\`
+3. Richiedi le credenziali per il Database a <@872144738248183839> o <@693545470257266719>
+4. Per entrare e uscire dal servizio:
+   - Accedi utilizzando le proprie credenziali nel sito che trovi in <#1470327802707312785>
+   - Nella sezione **Presenze & Turni** puoi avviare e terminare il turno
+   - Timbratura **Entrata** e **Uscita** al desk (obbligatorio ✅)
+
+❓ **Per qualsiasi dubbio o informazione:**
+- Chiedi a un membro della <@&1312723262270083133>
+- Oppure a un <@&1099742102184804428>
+
+💪 **Benvenuto/a nel team! Siamo felici di averti con noi!**`
+        : "Inserisci ID Discord e Nome Cognome per generare il messaggio di benvenuto";
+
+    const canCopy = valid;
+    elements.copyMain.disabled = !canCopy;
+    elements.copyFaction.disabled = !canCopy;
+    elements.copyRemoveMain.disabled = !canCopy;
+    elements.copyRemoveFaction.disabled = !canCopy;
+    elements.copyWelcome.disabled = !canCopy;
+
+    if (id && !valid) {
+        showToast('ID non valido • Deve essere di 18 cifre numeriche', 'error');
+    }
+}
+
+function copyToClipboard(text, name) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast(`Messaggio "${name}" copiato!`, 'success');
+    }).catch(() => {
+        showToast('Impossibile copiare il testo', 'error');
+    });
+}
+
+// Event listeners
+elements.discordId.addEventListener('input', updatePreviews);
+elements.nomeCognome.addEventListener('input', updatePreviews);
+
+elements.copyMain.addEventListener('click', () => copyToClipboard(elements.mainPreview.textContent, 'Principale'));
+elements.copyFaction.addEventListener('click', () => copyToClipboard(elements.factionPreview.textContent, 'Fazioni'));
+elements.copyRemoveMain.addEventListener('click', () => copyToClipboard(elements.removeMainPreview.textContent, 'Rimozione Principale'));
+elements.copyRemoveFaction.addEventListener('click', () => copyToClipboard(elements.removeFactionPreview.textContent, 'Rimozione Fazioni'));
+elements.copyWelcome.addEventListener('click', () => copyToClipboard(elements.welcomePreview.textContent, 'Benvenuto'));
+
+updatePreviews();
+</script>
+</body>
+</html>
